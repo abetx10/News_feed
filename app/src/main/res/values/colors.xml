@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="habr">#FFAAAA</color>
+    <color name="techcrunch">#DCF64A</color>
+
+
+    <color name="bottom_navigation_item_unselected_color">#FFFFFF</color>
+    <color name="bottom_navigation_background_color">#7E7E7E</color>
+    <color name="grey_light">#F3F3F3</color>
+    <color name="yellow">#FDBF63</color>
+    <color name="yellow_light">#FBE1BA</color>
 </resources>

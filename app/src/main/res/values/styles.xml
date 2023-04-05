@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/bottom_navigation_background_color</item>
+        <item name="itemIconTint">@color/bottom_navigation_item_unselected_color</item>
+    </style>
+</resources>
