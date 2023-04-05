@@ -1,5 +1,6 @@
 package com.example.newsfeed.presentation
 
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
@@ -108,6 +110,14 @@ class MainFragment : Fragment() {
 
         viewModel.selectedSourceValue.observe(viewLifecycleOwner) { source ->
             Log.d("SourceFilter", "Selected source: $source")
+        }
+
+        val bottomNavigationView = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        parentFragmentManager.addOnBackStackChangedListener {
+            if (parentFragmentManager.backStackEntryCount == 0) {
+                val menuItem = bottomNavigationView.menu.findItem(R.id.navigation_item_1)
+                menuItem.isChecked = true
+            }
         }
     }
 
