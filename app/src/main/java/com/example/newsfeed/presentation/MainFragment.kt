@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,9 +20,9 @@ import com.example.newsfeed.R
 import com.example.newsfeed.domain.model.UnifiedNewsItem
 import com.example.newsfeed.presentation.adapter.ListItemsAdapter
 import com.example.newsfeed.presentation.decoration.SpaceItemDecoration
+import com.example.newsfeed.utils.isInternetAvailable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
@@ -42,6 +43,9 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
+        if (!isInternetAvailable(requireContext())) {
+            showErrorDialog(getString(R.string.no_internet))
+        }
 
         recyclerView = view.findViewById(R.id.recyclerView)
 
@@ -109,8 +113,13 @@ class MainFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun refreshNews() {
-        viewModel.refreshNews()
-        swipeRefreshLayout.isRefreshing = false
+        if (isInternetAvailable(requireContext())) {
+            viewModel.refreshNews()
+            swipeRefreshLayout.isRefreshing = false
+        } else {
+            showErrorDialog(getString(R.string.no_internet))
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun openLinkInCustomTab(url: String) {
@@ -119,12 +128,14 @@ class MainFragment : Fragment() {
             customTabsIntent.launchUrl(it, Uri.parse(url))
         }
     }
-}
 
-//    private fun generateSampleData(): List<ListItem> {
-//        return listOf(
-//            ListItem(R.drawable.ic_android_black_24dp, "10:00 AM", "Title 1"),
-//            ListItem(R.drawable.ic_android_black_24dp, "11:00 AM", "Title 2"),
-//            ListItem(R.drawable.ic_android_black_24dp, "12:00 PM", "Title 3")
-//        )
-//    }
+    private fun showErrorDialog(message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Error")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+}

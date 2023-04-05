@@ -1,7 +1,5 @@
 package com.example.newsfeed.data
 
-import com.example.newsfeed.data.NewsSource
-
 interface NewsItemInterface {
     val title: String
     val link: String

@@ -2,6 +2,7 @@ package com.example.newsfeed.di
 
 import com.example.newsfeed.data.NewsRepository
 import com.example.newsfeed.data.habr.NewsApi
+import com.example.newsfeed.data.room.AppDatabase
 import com.example.newsfeed.data.techncruncher.TechCrunchNewsApi
 import dagger.Module
 import dagger.Provides
@@ -51,8 +52,9 @@ object AppModule {
     @Provides
     fun provideNewsRepository(
         habrNewsApi: NewsApi,
-        techCrunchNewsApi: TechCrunchNewsApi
+        techCrunchNewsApi: TechCrunchNewsApi,
+        appDatabase: AppDatabase
     ): NewsRepository {
-        return NewsRepository(habrNewsApi, techCrunchNewsApi)
+        return NewsRepository(habrNewsApi, techCrunchNewsApi, appDatabase)
     }
 }

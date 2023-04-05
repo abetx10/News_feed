@@ -1,5 +1,7 @@
 package com.example.newsfeed.presentation
 
+import NewsMapper
+import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -9,13 +11,18 @@ import com.example.newsfeed.data.NewsSource
 import com.example.newsfeed.domain.DateTimeUtils.toLocalDateTime
 import com.example.newsfeed.domain.model.UnifiedNewsItem
 import com.example.newsfeed.domain.toUnifiedNewsItem
+import com.example.newsfeed.utils.isInternetAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class NewsFeedViewModel @Inject constructor(private val newsRepository: NewsRepository) :
+class NewsFeedViewModel @Inject constructor(
+    private val newsRepository: NewsRepository,
+    @ApplicationContext private val application: Application
+) :
     ViewModel() {
 
     private val _newsItems = MediatorLiveData<List<UnifiedNewsItem>>()
@@ -59,26 +66,45 @@ class NewsFeedViewModel @Inject constructor(private val newsRepository: NewsRepo
 
     private fun fetchTechCrunchNews() {
         viewModelScope.launch {
-            val response = newsRepository.getTechCrunchFeed()
-            if (response.isSuccessful) {
-                response.body()?.channel?.items?.let { techCrunchItems ->
-                    _techCrunchItems.postValue(techCrunchItems.map { it.toUnifiedNewsItem() })
+            if (isInternetAvailable(application)) {
+                val response = newsRepository.getTechCrunchFeed()
+                if (response.isSuccessful) {
+                    response.body()?.channel?.items?.let { techCrunchItems ->
+                        _techCrunchItems.postValue(techCrunchItems.map { it.toUnifiedNewsItem() })
+
+                        newsRepository.saveNewsToCache(techCrunchItems.map {
+                            NewsMapper.toNewsEntity(
+                                it
+                            )
+                        })
+                    }
+                } else {
+                    // Обработка ошибок
                 }
             } else {
-                // Обработка ошибок
+                val cachedNews = newsRepository.getCachedNews(NewsSource.TECHCRUNCHER)
+                _techCrunchItems.postValue(cachedNews.map { NewsMapper.toUnifiedNewsItem(it) })
             }
         }
     }
 
     private fun fetchHabrNews() {
         viewModelScope.launch {
-            val response = newsRepository.getHabrFeed()
-            if (response.isSuccessful) {
-                response.body()?.channel?.items?.let { habrItems ->
-                    _habrItems.postValue(habrItems.map { it.toUnifiedNewsItem() })
+            if (isInternetAvailable(application)) {
+                val response = newsRepository.getHabrFeed()
+                if (response.isSuccessful) {
+                    response.body()?.channel?.items?.let { habrItems ->
+                        _habrItems.postValue(habrItems.map { it.toUnifiedNewsItem() })
+
+
+                        newsRepository.saveNewsToCache(habrItems.map { NewsMapper.toNewsEntity(it) })
+                    }
+                } else {
+                    // Обработка ошибок
                 }
             } else {
-                // Обработка ошибок
+                val cachedNews = newsRepository.getCachedNews(NewsSource.HABR)
+                _habrItems.postValue(cachedNews.map { NewsMapper.toUnifiedNewsItem(it) })
             }
         }
     }
