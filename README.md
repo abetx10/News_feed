@@ -1,4 +1,5 @@
-# An app designed to display news feeds from various sources, providing a comprehensive and personalized news reading experience. By clicking on an item, users can access the full article for an in-depth view. The app saves and caches news for seamless offline access and faster loading times.
+# 
+An app designed to display news feeds from various sources, providing a comprehensive and personalized news reading experience. By clicking on an item, users can access the full article for an in-depth view. The app saves and caches news for seamless offline access and faster loading times.
 
 Features:
 
